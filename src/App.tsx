@@ -306,6 +306,18 @@ export default function App({ initialTool = "merge" }: AppProps) {
     if (activeTool === "organize") setIsOrganizeUploadScreen(true);
   }, [activeTool]);
 
+  const isEditorMode =
+    activeTool === "merge"
+      ? files.length > 0 || !!mergedUrl
+      : activeTool === "split"
+        ? !isSplitUploadScreen
+        : activeTool === "compress"
+          ? !isCompressUploadScreen
+          : activeTool === "remove"
+            ? !isRemoveUploadScreen
+            : !isOrganizeUploadScreen;
+
+  const showLandingContent = !isEditorMode;
 
   const addFiles = useCallback(async (incoming: File[]) => {
     const pdfs = incoming.filter((f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"));
@@ -517,7 +529,7 @@ export default function App({ initialTool = "merge" }: AppProps) {
       </div>
 
       <ToolPageHeader tool={activeTool} />
-      <ToolHero tool={activeTool} />
+      {showLandingContent && <ToolHero tool={activeTool} />}
 
       {activeTool === "split" ? (
       <>
@@ -809,9 +821,9 @@ export default function App({ initialTool = "merge" }: AppProps) {
       </>
       )}
 
-      <ToolSEOContent tool={activeTool} />
+      {showLandingContent && <ToolSEOContent tool={activeTool} />}
       {/* ── Footer ── */}
-      {!(activeTool === "split" && !isSplitUploadScreen) && !(activeTool === "compress" && !isCompressUploadScreen) && !(activeTool === "remove" && !isRemoveUploadScreen) && !(activeTool === "organize" && !isOrganizeUploadScreen) && <footer className="border-t py-8 mt-4" style={{ borderColor: "#e2e8f0", background: "#fff" }}>
+      {showLandingContent && <footer className="border-t py-8 mt-4" style={{ borderColor: "#e2e8f0", background: "#fff" }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <div className="w-7 h-7 rounded-lg logo-icon flex items-center justify-center shadow">
