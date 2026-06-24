@@ -1,4 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import SEOHead from "@/components/SEOHead";
+import { getSeoForTool } from "@/lib/seo-config";
+import { SITE_NAME, TOOL_LABELS, TOOL_ROUTES, type ToolId } from "@/lib/site";
 import { PDFDocument, degrees } from "pdf-lib";
 import * as pdfjsLib from "pdfjs-dist";
 import "./index.css";
@@ -254,8 +258,13 @@ function SortableCard({ file: f, index, onRemove, onRotate, isOver }: SortableCa
 }
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
-export default function App() {
-  const [activeTool, setActiveTool] = useState<"merge" | "split" | "compress" | "remove" | "organize">("merge");
+interface AppProps {
+  initialTool?: ToolId;
+}
+
+export default function App({ initialTool = "merge" }: AppProps) {
+  const navigate = useNavigate();
+  const [activeTool, setActiveTool] = useState<ToolId>(initialTool);
   const [isSplitUploadScreen, setIsSplitUploadScreen] = useState(true);
   const [isCompressUploadScreen, setIsCompressUploadScreen] = useState(true);
   const [isRemoveUploadScreen, setIsRemoveUploadScreen] = useState(true);
@@ -298,6 +307,19 @@ export default function App() {
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
   };
+
+  const navigateToTool = useCallback(
+    (tool: ToolId) => {
+      setActiveTool(tool);
+      navigate(TOOL_ROUTES[tool]);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [navigate]
+  );
+
+  useEffect(() => {
+    setActiveTool(initialTool);
+  }, [initialTool]);
 
   useEffect(() => {
     if (activeTool === "split") setIsSplitUploadScreen(true);
@@ -493,9 +515,19 @@ export default function App() {
 
   const activeFile = activeId ? files.find((f) => f.id === activeId) ?? null : null;
 
+  const pageSeo = getSeoForTool(activeTool);
+
   // ── RENDER ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen app-bg overflow-x-hidden">
+      <SEOHead
+        page={pageSeo}
+        toolName={TOOL_LABELS[activeTool]}
+        breadcrumbs={[
+          { name: SITE_NAME, path: "/" },
+          { name: TOOL_LABELS[activeTool], path: TOOL_ROUTES[activeTool] },
+        ]}
+      />
 
       {/* ── Toasts ── */}
       <div className="fixed top-16 right-4 sm:right-6 z-50 flex flex-col gap-2 pointer-events-none">
@@ -512,19 +544,19 @@ export default function App() {
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 header-glass border-b" style={{ borderColor: "rgba(226,232,240,0.8)" }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <Link to="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
             <div className="w-9 h-9 rounded-xl logo-icon flex items-center justify-center shadow-md">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="white" opacity="0.95"/>
                 <polyline points="14 2 14 8 20 8" stroke="white" strokeWidth="1.8" fill="none" opacity="0.7"/>
                 <path d="M9 13h6M9 16h4" stroke="white" strokeWidth="1.4" strokeLinecap="round" opacity="0.8"/>
               </svg>
             </div>
             <div>
-              <span className="font-extrabold text-base tracking-tight" style={{ color: "#0f172a" }}>PDF</span>
-                <span className="font-extrabold text-base tracking-tight heading-gradient">{activeToolLabel}</span>
+              <span className="font-extrabold text-base tracking-tight" style={{ color: "#0f172a" }}>{SITE_NAME}</span>
+              <span className="hidden sm:inline font-extrabold text-base tracking-tight heading-gradient"> · {activeToolLabel}</span>
             </div>
-          </div>
+          </Link>
 
           <div className="flex items-center gap-2">
             {isMobile ? (
@@ -544,7 +576,7 @@ export default function App() {
               <>
                 <div className="tool-nav-tabs flex items-center gap-1 p-1 rounded-xl" style={{ background: "#f1f5f9" }}>
                   <button
-                    onClick={() => setActiveTool("merge")}
+                    onClick={() => navigateToTool("merge")}
                     className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "merge" ? "active" : ""}`}
                   >
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
@@ -555,7 +587,7 @@ export default function App() {
                     Merge PDF
                   </button>
                   <button
-                    onClick={() => setActiveTool("split")}
+                    onClick={() => navigateToTool("split")}
                     className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "split" ? "active" : ""}`}
                   >
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
@@ -568,7 +600,7 @@ export default function App() {
                     Split PDF
                   </button>
                   <button
-                    onClick={() => setActiveTool("compress")}
+                    onClick={() => navigateToTool("compress")}
                     className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "compress" ? "active" : ""}`}
                   >
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
@@ -580,7 +612,7 @@ export default function App() {
                     Compress PDF
                   </button>
                   <button
-                    onClick={() => setActiveTool("remove")}
+                    onClick={() => navigateToTool("remove")}
                     className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "remove" ? "active" : ""}`}
                   >
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
@@ -592,7 +624,7 @@ export default function App() {
                     Remove Pages
                   </button>
                   <button
-                    onClick={() => setActiveTool("organize")}
+                    onClick={() => navigateToTool("organize")}
                     className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "organize" ? "active" : ""}`}
                   >
                     <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
@@ -631,7 +663,7 @@ export default function App() {
                 <button
                   key={tool}
                   onClick={() => {
-                    setActiveTool(tool);
+                    navigateToTool(tool);
                     setIsMobileToolMenuOpen(false);
                   }}
                   className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold"
@@ -761,7 +793,7 @@ export default function App() {
                 { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#6366f1" strokeWidth="2"/><path d="M9 13h6M9 17h4" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>), name: "PDF to Word", desc: "Convert to editable doc" },
                 { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#6366f1" strokeWidth="2"/><circle cx="8.5" cy="8.5" r="1.5" stroke="#6366f1" strokeWidth="1.5"/><path d="M21 15l-5-5L5 21" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), name: "PDF to JPG", desc: "Export as images" },
               ].map((tool) => (
-                <div key={tool.name} className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={"tool" in tool && tool.tool ? () => setActiveTool(tool.tool) : undefined}>
+                <div key={tool.name} className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={"tool" in tool && tool.tool ? () => navigateToTool(tool.tool) : undefined}>
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>{tool.svg}</div>
                   <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{tool.name}</p>
                   <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>{tool.desc}</p>
@@ -801,7 +833,7 @@ export default function App() {
           ? <CompressPDFMobile onUploadScreenChange={setIsCompressUploadScreen} />
           : <CompressPDFDesktop onUploadScreenChange={setIsCompressUploadScreen} />}
 
-        {isCompressUploadScreen && <CompressPDFLanding onSelectTool={setActiveTool} />}
+        {isCompressUploadScreen && <CompressPDFLanding onSelectTool={navigateToTool} />}
       </>
       ) : activeTool === "remove" ? (
       <>
@@ -914,7 +946,7 @@ export default function App() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div
                 className="tool-card p-4 rounded-2xl text-center cursor-pointer"
-                onClick={() => setActiveTool("merge")}
+                onClick={() => navigateToTool("merge")}
               >
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M8 5h8M8 12h8M8 19h8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/><path d="M5 8l3-3 3 3M19 16l-3 3-3-3" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -925,7 +957,7 @@ export default function App() {
               </div>
               <div
                 className="tool-card p-4 rounded-2xl text-center cursor-pointer"
-                onClick={() => setActiveTool("split")}
+                onClick={() => navigateToTool("split")}
               >
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M8 12h8M12 8v8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>
@@ -938,7 +970,7 @@ export default function App() {
                 { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#6366f1" strokeWidth="2"/></svg>), name: "PDF Compress", desc: "Reduce file size", live: true, tool: "compress" as const },
                 { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#6366f1" strokeWidth="2"/><path d="M9 13h6M9 17h4" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>), name: "PDF to Word", desc: "Convert to editable doc" },
               ].map((tool) => (
-                <div key={tool.name} className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={"tool" in tool && tool.tool ? () => setActiveTool(tool.tool) : undefined}>
+                <div key={tool.name} className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={"tool" in tool && tool.tool ? () => navigateToTool(tool.tool) : undefined}>
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>{tool.svg}</div>
                   <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{tool.name}</p>
                   <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>{tool.desc}</p>
@@ -1077,7 +1109,7 @@ export default function App() {
               More <span className="heading-gradient">PDF Tools</span>
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => setActiveTool("merge")}>
+              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => navigateToTool("merge")}>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M8 5h8M8 12h8M8 19h8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/><path d="M5 8l3-3 3 3M19 16l-3 3-3-3" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </div>
@@ -1085,7 +1117,7 @@ export default function App() {
                 <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Combine files quickly</p>
                 <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
               </div>
-              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => setActiveTool("split")}>
+              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => navigateToTool("split")}>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M8 12h8M12 8v8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>
                 </div>
@@ -1093,7 +1125,7 @@ export default function App() {
                 <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Split into multiple files</p>
                 <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
               </div>
-              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => setActiveTool("remove")}>
+              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => navigateToTool("remove")}>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#fff1f2" }}>
                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M9 3h6" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/><path d="M4 7h16" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/><path d="M7 7l1 12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-12" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </div>
@@ -1101,7 +1133,7 @@ export default function App() {
                 <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Delete unwanted pages</p>
                 <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
               </div>
-              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => setActiveTool("compress")}>
+              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => navigateToTool("compress")}>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#6366f1" strokeWidth="2"/></svg>
                 </div>
@@ -1519,7 +1551,7 @@ export default function App() {
             <div
               key="PDF Split"
               className="tool-card p-4 rounded-2xl text-center cursor-pointer"
-              onClick={() => setActiveTool("split")}
+              onClick={() => navigateToTool("split")}
             >
               <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
                 <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M8 12h8M12 8v8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>
@@ -1534,7 +1566,7 @@ export default function App() {
               { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#6366f1" strokeWidth="2"/><path d="M9 13h6M9 17h4" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>), name: "PDF to Word", desc: "Convert to editable doc" },
               { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#6366f1" strokeWidth="2"/><circle cx="8.5" cy="8.5" r="1.5" stroke="#6366f1" strokeWidth="1.5"/><path d="M21 15l-5-5L5 21" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), name: "PDF to JPG", desc: "Export as images" },
             ].map((tool) => (
-              <div key={tool.name} className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={"tool" in tool && tool.tool ? () => setActiveTool(tool.tool) : undefined}>
+              <div key={tool.name} className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={"tool" in tool && tool.tool ? () => navigateToTool(tool.tool) : undefined}>
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>{tool.svg}</div>
                 <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{tool.name}</p>
                 <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>{tool.desc}</p>
@@ -1576,18 +1608,25 @@ export default function App() {
             <div className="w-7 h-7 rounded-lg logo-icon flex items-center justify-center shadow">
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="white"/></svg>
             </div>
-            <span className="font-extrabold text-sm" style={{ color: "#0f172a" }}>PDF Merge Tool</span>
+            <span className="font-extrabold text-sm" style={{ color: "#0f172a" }}>{SITE_NAME}</span>
           </div>
           <p className="text-xs mb-3" style={{ color: "#94a3b8" }}>
             Free · No Login · No Ads · Browser-Based · Privacy-Safe · Works on All Devices
           </p>
+          <nav className="flex flex-wrap justify-center gap-3 mb-4" aria-label="PDF tools">
+            {(Object.keys(TOOL_ROUTES) as ToolId[]).map((tool) => (
+              <Link key={tool} to={TOOL_ROUTES[tool]} className="text-xs font-semibold" style={{ color: "#4f46e5" }}>
+                {TOOL_LABELS[tool]}
+              </Link>
+            ))}
+          </nav>
           <div className="flex flex-wrap justify-center gap-3 mb-4">
-            {["merge pdf online free", "combine pdfs no login", "pdf joiner free", "secure pdf merge"].map((kw) => (
+            {["merge pdf online free", "split pdf no upload", "compress pdf free", "private pdf tools"].map((kw) => (
               <span key={kw} className="text-xs px-2.5 py-1 rounded-full" style={{ background: "#f8fafc", color: "#cbd5e1", border: "1px solid #f1f5f9" }}>{kw}</span>
             ))}
           </div>
           <p className="text-xs" style={{ color: "#e2e8f0" }}>
-            © {new Date().getFullYear()} PDF Merge Online. All processing done locally in your browser. Your files are never uploaded.
+            © {new Date().getFullYear()} {SITE_NAME}. All processing done locally in your browser. Your files are never uploaded.
           </p>
         </div>
       </footer>}
