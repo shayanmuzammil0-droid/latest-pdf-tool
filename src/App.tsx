@@ -280,16 +280,6 @@ export default function App({ initialTool = "merge" }: AppProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const activeToolLabel =
-    activeTool === "merge"
-      ? "Merge"
-      : activeTool === "split"
-        ? "Split"
-        : activeTool === "compress"
-          ? "Compress"
-          : activeTool === "remove"
-            ? "Remove"
-            : "Organize";
   const [overId, setOverId] = useState<string | null>(null);
   const [isMainMergeVisible, setIsMainMergeVisible] = useState(true);
   const [loadingFiles, setLoadingFiles] = useState(false);
