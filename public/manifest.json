@@ -1,6 +1,6 @@
 {
-  "name": "PDF Tools Online",
-  "short_name": "PDF Tools",
+  "name": "MyPDF Online",
+  "short_name": "MyPDF",
   "description": "Free PDF tools in your browser — merge, split, compress, remove pages & organize. Private, no ads.",
   "start_url": "/",
   "display": "standalone",

@@ -1,3 +1,6 @@
+# MyPDF Online — https://mypdf.online
+# Free browser-based PDF tools. Files processed locally, never uploaded.
+
 User-agent: *
 Allow: /
 
@@ -7,4 +10,37 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
-Sitemap: https://latest-pdf-tool.vercel.app/sitemap.xml
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+Sitemap: https://mypdf.online/sitemap.xml

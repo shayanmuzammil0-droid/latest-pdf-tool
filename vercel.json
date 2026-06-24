@@ -1,6 +1,47 @@
 {
-  "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }],
+  "redirects": [
+    { "source": "/combine-pdf", "destination": "/merge-pdf", "statusCode": 301 },
+    { "source": "/pdf-combiner", "destination": "/merge-pdf", "statusCode": 301 },
+    { "source": "/pdf-merger", "destination": "/merge-pdf", "statusCode": 301 },
+    { "source": "/join-pdf", "destination": "/merge-pdf", "statusCode": 301 },
+    { "source": "/merge-pdfs", "destination": "/merge-pdf", "statusCode": 301 },
+    { "source": "/shrink-pdf", "destination": "/compress-pdf", "statusCode": 301 },
+    { "source": "/reduce-pdf-size", "destination": "/compress-pdf", "statusCode": 301 },
+    { "source": "/pdf-compressor", "destination": "/compress-pdf", "statusCode": 301 },
+    { "source": "/delete-pdf-pages", "destination": "/remove-pages", "statusCode": 301 },
+    { "source": "/extract-pdf-pages", "destination": "/split-pdf", "statusCode": 301 },
+    { "source": "/pdf-splitter", "destination": "/split-pdf", "statusCode": 301 },
+    { "source": "/reorder-pdf-pages", "destination": "/organize-pdf", "statusCode": 301 },
+    { "source": "/rotate-pdf-pages", "destination": "/organize-pdf", "statusCode": 301 }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!assets/|sitemap\\.xml|robots\\.txt|llms\\.txt|manifest\\.json|favicon\\.ico|og-image\\.jpg).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/robots.txt",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

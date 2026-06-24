@@ -53,7 +53,7 @@ const TRUST_BADGES = [
 export default function Home() {
   return (
     <div className="min-h-screen" style={{ background: "linear-gradient(180deg,#f8fafc 0%,#fff 40%)" }}>
-      <SEOHead page={homeSeo} includeWebsiteSchema />
+      <SEOHead page={homeSeo} includeWebsiteSchema includeItemList includeOrganization />
 
       <header className="border-b sticky top-0 z-30 backdrop-blur-md" style={{ borderColor: "#e2e8f0", background: "rgba(255,255,255,0.92)" }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
@@ -91,7 +91,7 @@ export default function Home() {
             100% Free · No Upload · No Ads
           </p>
           <h1 className="text-3xl sm:text-5xl font-black mb-5 leading-tight" style={{ color: "#0f172a" }}>
-            Free PDF Tools Online —{" "}
+            {homeSeo.h1 ?? "Free PDF Tools Online"} —{" "}
             <span className="heading-gradient">Private, Fast &amp; Easy</span>
           </h1>
           <p className="text-base sm:text-lg max-w-2xl mx-auto mb-8 leading-relaxed" style={{ color: "#64748b" }}>
@@ -160,6 +160,39 @@ export default function Home() {
                 </span>
               </Link>
             ))}
+          </div>
+        </section>
+
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center mb-8" style={{ color: "#0f172a" }}>
+            MyPDF Online vs <span className="heading-gradient">Upload-Based PDF Tools</span>
+          </h2>
+          <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: "#e2e8f0" }}>
+            <table className="w-full text-sm" style={{ background: "#fff" }}>
+              <thead>
+                <tr style={{ background: "#f8fafc" }}>
+                  <th className="text-left p-4 font-bold" style={{ color: "#0f172a" }}>Feature</th>
+                  <th className="p-4 font-bold" style={{ color: "#4f46e5" }}>MyPDF Online</th>
+                  <th className="p-4 font-bold" style={{ color: "#64748b" }}>iLovePDF / Smallpdf</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["File upload to server", "Never — 100% browser", "Yes — cloud processing"],
+                  ["Account required", "No", "Often for advanced features"],
+                  ["Ads on free tier", "No ads", "Yes — ads & upsells"],
+                  ["Mobile-optimized UI", "Dedicated per tool", "Responsive only"],
+                  ["Large file speed", "Instant — no upload wait", "Slower — upload first"],
+                  ["Privacy", "Files stay on device", "Files sent to servers"],
+                ].map(([feature, us, them]) => (
+                  <tr key={feature} className="border-t" style={{ borderColor: "#f1f5f9" }}>
+                    <td className="p-4 font-medium" style={{ color: "#334155" }}>{feature}</td>
+                    <td className="p-4 text-center font-semibold" style={{ color: "#16a34a" }}>{us}</td>
+                    <td className="p-4 text-center" style={{ color: "#94a3b8" }}>{them}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -247,7 +280,7 @@ export default function Home() {
             </h2>
             <div className="space-y-4 text-sm leading-relaxed" style={{ color: "#475569" }}>
               <p>
-                Searching for <strong style={{ color: "#0f172a" }}>free PDF tools online</strong> that don't require uploading your files to a stranger's server? You've found the right place. Our suite includes merge, split, compress, remove pages, and organize — everything you need to edit PDFs without installing software.
+                Searching for <strong style={{ color: "#0f172a" }}>free PDF tools online</strong> that don't require uploading your files? <strong style={{ color: "#0f172a" }}>MyPDF Online</strong> (mypdf.online) includes merge, split, compress, remove pages, and organize — everything you need without installing software.
               </p>
               <p>
                 Most popular PDF websites upload your documents to their cloud, creating privacy risks and slow wait times for large files. Our tools use modern browser technology to process PDFs <strong style={{ color: "#0f172a" }}>locally on your device</strong> — faster, safer, and completely free with no ads.
@@ -265,12 +298,15 @@ export default function Home() {
           <p className="text-xs mb-3" style={{ color: "#94a3b8" }}>
             {SITE_NAME} · Free · No Login · No Ads · Browser-Based · Privacy-Safe
           </p>
-          <nav className="flex flex-wrap justify-center gap-3 mb-4" aria-label="Footer tools">
+          <nav className="flex flex-wrap justify-center gap-3 mb-4" aria-label="Footer links">
             {TOOLS.map((t) => (
               <Link key={t.id} to={TOOL_ROUTES[t.id]} className="text-xs font-semibold" style={{ color: "#4f46e5" }}>
                 {TOOL_LABELS[t.id]}
               </Link>
             ))}
+            <Link to="/about" className="text-xs font-semibold" style={{ color: "#64748b" }}>
+              About
+            </Link>
           </nav>
           <p className="text-xs" style={{ color: "#cbd5e1" }}>
             © {new Date().getFullYear()} {SITE_NAME}. All processing done locally in your browser.

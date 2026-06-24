@@ -1,4 +1,4 @@
-import { SITE_NAME, SITE_TAGLINE, SITE_URL, TOOL_ROUTES, type ToolId } from "./site";
+import { SITE_NAME, SITE_TAGLINE, SITE_URL, TOOL_LABELS, TOOL_ROUTES, TOOL_SHORT_DESC, type ToolId } from "./site";
 
 export interface FaqItem {
   q: string;
@@ -14,41 +14,67 @@ export interface PageSeo {
   faqs?: FaqItem[];
   articleHeading?: string;
   articleParagraphs?: string[];
+  howToSteps?: string[];
 }
 
-const sharedKeywords =
-  "free pdf tools online, pdf editor browser, no upload pdf tool, private pdf editor, pdf tools no login, pdf tools no ads";
+const brandKeywords =
+  "mypdf online, mypdf.online, free pdf tools, pdf tools online free, browser pdf editor, no upload pdf, private pdf tools";
+
+const sharedKeywords = `${brandKeywords}, pdf editor browser, no login pdf tools, pdf tools no ads, client side pdf processing`;
 
 export const homeSeo: PageSeo = {
   path: "/",
-  title: "Free PDF Tools Online — Merge, Split, Compress & More | No Upload, No Ads",
+  title: "MyPDF Online — Free PDF Tools | Merge, Split, Compress, No Upload",
   description:
-    "Free online PDF tools that run 100% in your browser. Merge, split, compress, remove pages & organize PDFs — private, fast, no login, no ads. Works on mobile & desktop.",
-  keywords: `${sharedKeywords}, merge pdf online free, split pdf online, compress pdf free, remove pdf pages, organize pdf pages`,
+    "MyPDF Online offers 5 free PDF tools in your browser: merge, split, compress, remove pages & organize. No file upload, no login, no ads. Private, fast — mobile & desktop.",
+  keywords: `${sharedKeywords}, merge pdf online free, split pdf online free, compress pdf online free, combine pdf free, pdf combiner online, remove pdf pages free, organize pdf pages, ilovepdf alternative no upload, smallpdf alternative free`,
+  h1: "Free PDF Tools Online — Private, Fast & Easy",
   faqs: [
     {
-      q: "Are these PDF tools really free?",
-      a: "Yes. All five tools are completely free with no hidden fees, premium tiers, or usage limits.",
+      q: "What is MyPDF Online?",
+      a: "MyPDF Online is a free suite of five browser-based PDF tools: merge, split, compress, remove pages, and organize. All processing happens on your device — files are never uploaded to a server.",
+    },
+    {
+      q: "Are MyPDF Online tools really free?",
+      a: "Yes. All five tools are completely free with no hidden fees, premium tiers, watermarks, or usage limits.",
     },
     {
       q: "Do my PDF files get uploaded to a server?",
-      a: "No. Every tool processes files locally in your browser. Your documents never leave your device.",
+      a: "No. Every tool processes files locally in your browser using JavaScript. Your documents never leave your device.",
     },
     {
-      q: "Do I need to create an account?",
-      a: "No account, email, or login is required. Open a tool and start working instantly.",
+      q: "How is MyPDF Online different from iLovePDF or Smallpdf?",
+      a: "Unlike most competitors, MyPDF Online never uploads your files. Processing is 100% client-side for maximum privacy. There are no ads, no login walls, and dedicated mobile UIs for every tool.",
     },
     {
       q: "Does it work on mobile phones?",
-      a: "Yes. Each tool has a dedicated mobile UI designed for touch, plus a full desktop experience.",
+      a: "Yes. Each tool has a dedicated mobile interface designed for touch, separate from the desktop layout.",
     },
     {
       q: "Can I handle large PDF files?",
-      a: "Yes. The tools are optimized for large files and batch operations, all processed on your device.",
+      a: "Yes. Tools support large files and batch operations (50+ PDFs for merge) because processing uses your device's power, not a remote server.",
     },
     {
-      q: "Are there ads on the site?",
+      q: "Are there ads on MyPDF Online?",
       a: "No ads, pop-ups, or distractions. The experience stays clean and focused on your PDF task.",
+    },
+  ],
+};
+
+export const aboutSeo: PageSeo = {
+  path: "/about",
+  title: "About MyPDF Online — Private Browser-Based PDF Tools",
+  description:
+    "Learn how MyPDF Online works. Free PDF tools that process files entirely in your browser. No upload, no account, no ads. Your privacy comes first.",
+  keywords: `${sharedKeywords}, about mypdf online, private pdf tools, browser pdf processing, pdf privacy`,
+  faqs: [
+    {
+      q: "How does MyPDF Online protect my privacy?",
+      a: "All PDF operations run locally in your web browser using pdf-lib and PDF.js. Your files are never transmitted to our servers or any third party.",
+    },
+    {
+      q: "Who operates MyPDF Online?",
+      a: "MyPDF Online is an independent free tool suite built to give users a fast, private alternative to upload-based PDF services.",
     },
   ],
 };
@@ -56,51 +82,69 @@ export const homeSeo: PageSeo = {
 export const toolSeo: Record<ToolId, PageSeo> = {
   merge: {
     path: TOOL_ROUTES.merge,
-    title: "Merge PDF Online Free — Combine PDF Files Instantly | No Login",
+    title: "Merge PDF Online Free — Combine PDF Files | MyPDF Online",
     description:
-      "Merge PDF files online for free. Combine multiple PDFs into one document in your browser — no upload, no login, no ads. Fast, private, works on mobile & desktop.",
+      "Merge PDF files online for free at MyPDF Online. Combine multiple PDFs into one — no upload, no login, no ads. Drag to reorder, preview thumbnails. Works on mobile & desktop.",
     keywords:
-      "merge pdf online free, combine pdf files, pdf merger no login, join pdf online, merge multiple pdfs, pdf combiner free, secure pdf merge browser",
+      "merge pdf online free, combine pdf files, pdf combiner, combine pdf free, combine pdf files free, pdf merger no login, join pdf online, merge multiple pdfs, merge pdf without uploading, merge pdf browser, pdf joiner free, combine pdfs no login, merge pdf no sign up, secure pdf merge",
+    h1: "Merge PDF Files Online Free",
+    howToSteps: [
+      "Click Select PDF Files or drag and drop your PDF documents.",
+      "Drag file cards to arrange them in the order you want.",
+      "Click Merge to combine all PDFs in your browser.",
+      "Download your merged PDF instantly — no account needed.",
+    ],
     faqs: [
       {
         q: "Is this PDF merge tool completely free?",
-        a: "Yes — 100% free with no hidden fees, premium tiers, or usage limits.",
+        a: "Yes — 100% free with no hidden fees, premium tiers, or usage limits on MyPDF Online.",
       },
       {
         q: "Do I need to sign up or log in?",
         a: "No registration or email is required. Open the page and start merging instantly.",
       },
       {
-        q: "Are my PDFs safe and private?",
-        a: "All processing happens in your browser. Files are never sent to any server.",
+        q: "Are my PDFs uploaded to a server?",
+        a: "No. All merging happens in your browser. Files never leave your device.",
       },
       {
         q: "How many PDF files can I merge at once?",
         a: "You can merge 50+ PDFs in a single operation without performance issues.",
       },
       {
+        q: "Can I reorder PDFs before merging?",
+        a: "Yes. Drag and drop file cards to set the exact page order in the final document.",
+      },
+      {
         q: "Does it work on mobile?",
-        a: "Yes. The tool is fully responsive with a dedicated mobile interface.",
+        a: "Yes. MyPDF Online has a dedicated mobile interface for merging PDFs on phones and tablets.",
       },
     ],
-    articleHeading: "The Best Free PDF Merge Tool Online",
+    articleHeading: "The Best Free PDF Merge Tool — No Upload Required",
     articleParagraphs: [
-      "Looking for the fastest way to merge PDF files online free? Combine multiple PDF documents into one seamless file — instantly, securely, and without any login.",
-      "Unlike other online PDF combiners that require registration or charge fees, our PDF merger delivers a clean, distraction-free experience with visual file previews.",
-      "All files are processed locally on your device, making this one of the most secure online PDF combiners available.",
+      "Looking for the fastest way to merge PDF files online free? MyPDF Online combines multiple PDF documents into one seamless file — instantly, securely, and without any login.",
+      "Unlike iLovePDF, Smallpdf, and other upload-based services, our PDF merger processes everything locally in your browser. Your sensitive documents are never transmitted to any server.",
+      "With visual thumbnails, drag-and-drop ordering, and support for 50+ files per merge, MyPDF Online is the most private free PDF combiner available.",
     ],
   },
   split: {
     path: TOOL_ROUTES.split,
-    title: "Split PDF Online Free — Extract & Separate Pages | No Upload",
+    title: "Split PDF Online Free — Extract Pages by Range | MyPDF Online",
     description:
-      "Split PDF files online for free. Extract pages, split by range, or separate every page — all in your browser. Private, fast, no login. Mobile & desktop supported.",
+      "Split PDF files online free at MyPDF Online. Extract pages, split by range, or separate every page — 100% in your browser. No upload, no login. Mobile & desktop.",
     keywords:
-      "split pdf online free, extract pdf pages, separate pdf pages, pdf splitter no login, split pdf by range, divide pdf online, extract pages from pdf free",
+      "split pdf online free, extract pdf pages, separate pdf pages, pdf splitter, split pdf by range, split pdf by pages, divide pdf online, extract pages from pdf free, split pdf without uploading, split pdf into multiple files, pdf separator online, extract pdf pages online free",
+    h1: "Split PDF Online Free",
+    howToSteps: [
+      "Upload your PDF file by clicking or dragging it into the upload area.",
+      "Choose split mode: extract pages, split all, or split by custom range.",
+      "Select pages or enter ranges like 1-3, 5, 8-10.",
+      "Download split PDF files individually or as a ZIP archive.",
+    ],
     faqs: [
       {
         q: "Is this PDF split tool completely free?",
-        a: "Yes, it's fully free with unlimited splits and no subscriptions.",
+        a: "Yes, unlimited splits with no subscriptions on MyPDF Online.",
       },
       {
         q: "Can I split by page range?",
@@ -108,7 +152,11 @@ export const toolSeo: Record<ToolId, PageSeo> = {
       },
       {
         q: "Are my PDF files uploaded to a server?",
-        a: "No. Processing is done locally in your browser for maximum privacy.",
+        a: "No. Splitting is done locally in your browser for maximum privacy.",
+      },
+      {
+        q: "Can I split a PDF into individual pages?",
+        a: "Yes. Use Split All mode to create a separate PDF for every page.",
       },
       {
         q: "Can I reorder pages before splitting?",
@@ -116,63 +164,81 @@ export const toolSeo: Record<ToolId, PageSeo> = {
       },
       {
         q: "Does it work on mobile devices?",
-        a: "Yes. The split editor is optimized for mobile with touch-friendly controls.",
+        a: "Yes. The split editor has a dedicated mobile UI with touch-friendly controls.",
       },
     ],
     articleHeading: "Split PDF Files Online — Fast, Free & Private",
     articleParagraphs: [
-      "Need to split a PDF online without uploading to a cloud server? Extract individual pages, split by custom ranges, or separate every page — all in seconds.",
-      "Visual page thumbnails let you see exactly what you're extracting before you download. No account, no watermarks, no waiting.",
-      "Everything runs client-side in your browser, so sensitive documents stay on your device.",
+      "Need to split a PDF online without uploading to a cloud server? MyPDF Online lets you extract individual pages, split by custom ranges, or separate every page — all in seconds.",
+      "Visual page thumbnails show exactly what you're extracting before download. No account, no watermarks, no waiting in an upload queue.",
+      "Everything runs client-side, so contracts, tax documents, and personal files stay on your device.",
     ],
   },
   compress: {
     path: TOOL_ROUTES.compress,
-    title: "Compress PDF Online Free — Reduce PDF File Size | No Upload",
+    title: "Compress PDF Online Free — Reduce File Size | MyPDF Online",
     description:
-      "Compress PDF files online for free. Reduce file size while keeping text readable — processed in your browser. No login, no upload, no ads. Mobile & desktop.",
+      "Compress PDF online free at MyPDF Online. Reduce PDF file size while keeping text readable — processed in your browser. No upload, no login, no ads.",
     keywords:
-      "compress pdf online free, reduce pdf file size, pdf compressor no login, shrink pdf online, optimize pdf size, pdf size reducer free, compress pdf without upload",
+      "compress pdf online free, reduce pdf file size, pdf compressor, shrink pdf online, compress pdf for email, optimize pdf size, pdf size reducer free, compress pdf without uploading, compress large pdf, reduce pdf size online free, pdf compression tool free",
+    h1: "Compress PDF Online Free",
+    howToSteps: [
+      "Upload your PDF and preview all page thumbnails.",
+      "Choose a compression level: Extreme, Recommended, or Less.",
+      "Click Compress to optimize the PDF in your browser.",
+      "Download the smaller PDF file instantly.",
+    ],
     faqs: [
       {
         q: "Does compression keep text readable?",
-        a: "Yes. The compressor optimizes PDF structure while keeping text and pages clear.",
+        a: "Yes. MyPDF Online optimizes PDF structure while keeping text and pages clear.",
       },
       {
         q: "Are my PDFs uploaded to a server?",
-        a: "No. Compression runs locally in your browser.",
+        a: "No. Compression runs locally in your browser on MyPDF Online.",
       },
       {
         q: "What compression levels are available?",
-        a: "Choose Extreme, Recommended, or Less compression depending on how aggressive you want the optimization.",
+        a: "Extreme, Recommended, and Less — tune how aggressive the optimization should be.",
       },
       {
         q: "Will every PDF get much smaller?",
-        a: "Some PDFs are already optimized. The tool keeps the smallest quality-safe result available.",
+        a: "Some PDFs are already optimized. The tool keeps the smallest quality-safe result.",
+      },
+      {
+        q: "Can I compress a PDF for email?",
+        a: "Yes. Compress large PDFs to fit email attachment limits while keeping readability.",
       },
       {
         q: "Does it work on mobile?",
-        a: "Yes. The mobile version keeps the same presets in a touch-friendly layout.",
+        a: "Yes. The mobile compressor has the same three presets in a touch-friendly layout.",
       },
     ],
-    articleHeading: "The Best Free PDF Compressor for Quality-First Size Reduction",
+    articleHeading: "Free PDF Compressor — Quality-First Size Reduction",
     articleParagraphs: [
-      "Need to compress PDF files online without sacrificing readability? Reduce file size by optimizing PDF structure while keeping text clear.",
-      "Preview every page thumbnail before compression and choose from three compression presets in one clean panel.",
-      "Because everything happens locally, it works as a private PDF compressor with no upload queue or server dependency.",
+      "Need to compress PDF files online without sacrificing readability? MyPDF Online reduces file size by optimizing PDF structure while keeping text clear.",
+      "Preview every page before compression and choose from three presets. No upload queue — even large files compress on your device instantly.",
+      "A private alternative to upload-based compressors like iLovePDF and Smallpdf.",
     ],
   },
   remove: {
     path: TOOL_ROUTES.remove,
-    title: "Remove PDF Pages Online Free — Delete Unwanted Pages | No Upload",
+    title: "Remove PDF Pages Online Free — Delete Pages | MyPDF Online",
     description:
-      "Remove pages from PDF files online for free. Delete unwanted pages with visual thumbnails — 100% in your browser. No login, private, fast. Mobile & desktop.",
+      "Remove pages from PDF online free at MyPDF Online. Delete unwanted pages with visual thumbnails — 100% in your browser. No login, private, fast.",
     keywords:
-      "remove pdf pages online free, delete pages from pdf, pdf page remover, remove unwanted pdf pages, delete pdf pages no login, extract and remove pdf pages",
+      "remove pdf pages online free, delete pages from pdf, pdf page remover, remove unwanted pdf pages, delete pdf pages no login, remove pages from pdf free, delete pdf page online, remove blank pages from pdf",
+    h1: "Remove PDF Pages Online Free",
+    howToSteps: [
+      "Upload your PDF file to the remove pages tool.",
+      "Browse page thumbnails and select pages to delete.",
+      "Click Remove to process the PDF in your browser.",
+      "Download your cleaned PDF with unwanted pages removed.",
+    ],
     faqs: [
       {
         q: "Is removing PDF pages free?",
-        a: "Yes. Delete as many pages as you need with no limits or fees.",
+        a: "Yes. Delete as many pages as you need with no limits on MyPDF Online.",
       },
       {
         q: "Do I need to upload my PDF?",
@@ -180,58 +246,73 @@ export const toolSeo: Record<ToolId, PageSeo> = {
       },
       {
         q: "Can I preview pages before deleting?",
-        a: "Yes. See thumbnail previews of every page and select exactly which to remove.",
+        a: "Yes. Thumbnail previews let you select exactly which pages to remove.",
       },
       {
         q: "Will the remaining PDF keep its quality?",
-        a: "Yes. Only selected pages are removed; the rest of the document stays intact.",
+        a: "Yes. Only selected pages are removed; the rest stays intact.",
+      },
+      {
+        q: "Can I remove multiple pages at once?",
+        a: "Yes. Select as many pages as you need in one operation.",
       },
       {
         q: "Does it work on mobile?",
-        a: "Yes. A dedicated mobile UI makes page selection easy on phones and tablets.",
+        a: "Yes. A dedicated mobile UI makes page selection easy on phones.",
       },
     ],
     articleHeading: "Remove PDF Pages Online — Free, Private & Easy",
     articleParagraphs: [
-      "Quickly remove unwanted pages from any PDF without installing software or creating an account.",
-      "Select pages visually with thumbnails, download your cleaned PDF instantly, and keep full control of your document.",
-      "All processing is local and private — your files never touch a server.",
+      "Quickly remove unwanted pages from any PDF without installing software or creating an account on MyPDF Online.",
+      "Delete blank pages, covers, or irrelevant sections with visual selection. Download your cleaned PDF instantly.",
+      "All processing is local — your files never touch a server.",
     ],
   },
   organize: {
     path: TOOL_ROUTES.organize,
-    title: "Organize PDF Pages Online Free — Reorder & Rotate | No Upload",
+    title: "Organize PDF Pages Online Free — Reorder & Rotate | MyPDF Online",
     description:
-      "Organize PDF pages online for free. Reorder, rotate, and rearrange pages with drag-and-drop — in your browser. No login, no upload, no ads. Mobile & desktop.",
+      "Organize PDF pages online free at MyPDF Online. Reorder, rotate, and rearrange pages with drag-and-drop — in your browser. No upload, no login.",
     keywords:
-      "organize pdf pages online free, reorder pdf pages, rotate pdf pages, rearrange pdf online, pdf page organizer, sort pdf pages free, pdf page rotation online",
+      "organize pdf pages online free, reorder pdf pages, rotate pdf pages, rearrange pdf online, pdf page organizer, sort pdf pages free, pdf page rotation online, reorder pdf pages online free, rotate pdf page online free",
+    h1: "Organize PDF Pages Online Free",
+    howToSteps: [
+      "Upload your PDF to the organize tool.",
+      "Drag page thumbnails to reorder them.",
+      "Rotate individual pages as needed.",
+      "Download your reorganized PDF file.",
+    ],
     faqs: [
       {
         q: "Can I reorder PDF pages by dragging?",
-        a: "Yes. Drag and drop page thumbnails to rearrange your document in any order.",
+        a: "Yes. Drag and drop page thumbnails to rearrange your document.",
       },
       {
         q: "Can I rotate individual pages?",
-        a: "Yes. Rotate pages as needed before downloading your reorganized PDF.",
+        a: "Yes. Rotate pages before downloading your reorganized PDF.",
       },
       {
         q: "Is this tool free?",
-        a: "Completely free with no account required.",
+        a: "Completely free with no account required on MyPDF Online.",
       },
       {
         q: "Are my files uploaded anywhere?",
-        a: "No. Organization happens entirely in your browser on your device.",
+        a: "No. Organization happens entirely in your browser.",
+      },
+      {
+        q: "Can I fix scanned pages that are upside down?",
+        a: "Yes. Rotate any page 90°, 180°, or 270° before downloading.",
       },
       {
         q: "Does it work on mobile?",
-        a: "Yes. Touch-friendly drag-and-drop is available on mobile devices.",
+        a: "Yes. Touch-friendly drag-and-drop on mobile devices.",
       },
     ],
     articleHeading: "Organize PDF Pages Online — Reorder, Rotate & Download",
     articleParagraphs: [
-      "Rearrange PDF pages in seconds with a visual drag-and-drop editor that runs entirely in your browser.",
-      "Rotate misaligned scans, fix page order, and download a perfectly organized PDF — no software install needed.",
-      "Your documents stay private because nothing is uploaded to external servers.",
+      "Rearrange PDF pages in seconds with MyPDF Online's visual drag-and-drop editor that runs entirely in your browser.",
+      "Fix page order in scanned documents, rotate misaligned pages, and download a perfectly organized PDF.",
+      "No software install, no upload, no privacy risk.",
     ],
   },
 };
@@ -249,6 +330,7 @@ export function buildWebAppSchema(page: PageSeo, toolName?: string) {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: toolName ? `${toolName} — ${SITE_NAME}` : SITE_NAME,
+    alternateName: ["MyPDF", "mypdf.online"],
     url: absoluteUrl(page.path),
     description: page.description,
     applicationCategory: "UtilitiesApplication",
@@ -256,11 +338,11 @@ export function buildWebAppSchema(page: PageSeo, toolName?: string) {
     browserRequirements: "Requires JavaScript. Works in Chrome, Firefox, Safari, Edge.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     featureList: [
-      "100% browser-based processing",
-      "No file upload to servers",
-      "No login required",
-      "Mobile and desktop UI",
+      "100% browser-based processing — no server upload",
+      "No login or account required",
+      "Dedicated mobile and desktop interfaces",
       "Free with no ads",
+      "Supports large PDF files and batch operations",
     ],
   };
 }
@@ -295,12 +377,54 @@ export function buildWebsiteSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: SITE_NAME,
+    alternateName: "mypdf.online",
     url: SITE_URL,
     description: SITE_TAGLINE,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SITE_URL}/?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
+  };
+}
+
+export function buildOrganizationSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: `${SITE_URL}/og-image.jpg`,
+    description: SITE_TAGLINE,
+    sameAs: [],
+  };
+}
+
+export function buildItemListSchema() {
+  const tools = (Object.keys(TOOL_ROUTES) as ToolId[]).map((id, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: TOOL_LABELS[id],
+    url: absoluteUrl(TOOL_ROUTES[id]),
+    description: TOOL_SHORT_DESC[id],
+  }));
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${SITE_NAME} — Free PDF Tools`,
+    description: SITE_TAGLINE,
+    numberOfItems: tools.length,
+    itemListElement: tools,
+  };
+}
+
+export function buildHowToSchema(name: string, description: string, steps: string[], url: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name,
+    description,
+    url,
+    step: steps.map((text, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      name: `Step ${index + 1}`,
+      text,
+    })),
   };
 }

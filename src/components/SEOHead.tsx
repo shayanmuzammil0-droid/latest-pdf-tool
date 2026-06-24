@@ -3,6 +3,9 @@ import {
   absoluteUrl,
   buildBreadcrumbSchema,
   buildFaqSchema,
+  buildHowToSchema,
+  buildItemListSchema,
+  buildOrganizationSchema,
   buildWebAppSchema,
   buildWebsiteSchema,
   type PageSeo,
@@ -14,6 +17,8 @@ interface SEOHeadProps {
   toolName?: string;
   breadcrumbs?: { name: string; path: string }[];
   includeWebsiteSchema?: boolean;
+  includeItemList?: boolean;
+  includeOrganization?: boolean;
 }
 
 export default function SEOHead({
@@ -21,14 +26,28 @@ export default function SEOHead({
   toolName,
   breadcrumbs,
   includeWebsiteSchema = false,
+  includeItemList = false,
+  includeOrganization = false,
 }: SEOHeadProps) {
   const url = absoluteUrl(page.path);
   const ogImage = `${SITE_URL}/og-image.jpg`;
 
   const schemas: object[] = [buildWebAppSchema(page, toolName)];
   if (page.faqs?.length) schemas.push(buildFaqSchema(page.faqs));
+  if (page.howToSteps?.length) {
+    schemas.push(
+      buildHowToSchema(
+        toolName ? `How to ${toolName}` : page.title,
+        page.description,
+        page.howToSteps,
+        url
+      )
+    );
+  }
   if (breadcrumbs?.length) schemas.push(buildBreadcrumbSchema(breadcrumbs));
   if (includeWebsiteSchema) schemas.push(buildWebsiteSchema());
+  if (includeItemList) schemas.push(buildItemListSchema());
+  if (includeOrganization) schemas.push(buildOrganizationSchema());
 
   return (
     <Helmet>
@@ -57,6 +76,8 @@ export default function SEOHead({
       <meta name="author" content={SITE_NAME} />
       <meta name="theme-color" content="#4f46e5" />
       <meta name="application-name" content={SITE_NAME} />
+
+      <link rel="alternate" type="text/plain" href={`${SITE_URL}/llms.txt`} title="LLM site map" />
 
       {schemas.map((schema, i) => (
         <script key={i} type="application/ld+json">

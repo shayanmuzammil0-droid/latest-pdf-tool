@@ -1,0 +1,30 @@
+# MyPDF Online
+> Free PDF tools that run 100% in your browser. No file upload to servers. No login. No ads.
+> Domain: https://mypdf.online
+
+MyPDF Online provides five free PDF utilities for merge, split, compress, remove pages, and organize.
+All processing happens client-side using pdf-lib and pdfjs-dist in the user's browser.
+Files never leave the device. Works on mobile and desktop with dedicated UIs for each.
+
+## Tools
+- [Merge PDF](https://mypdf.online/merge-pdf): Combine multiple PDF files into one. Drag to reorder. Supports 50+ files.
+- [Split PDF](https://mypdf.online/split-pdf): Extract pages, split by range, or split every page. ZIP download supported.
+- [Compress PDF](https://mypdf.online/compress-pdf): Reduce PDF file size with Extreme, Recommended, or Less compression.
+- [Remove Pages](https://mypdf.online/remove-pages): Delete unwanted pages with visual thumbnail selection.
+- [Organize PDF](https://mypdf.online/organize-pdf): Reorder and rotate PDF pages with drag-and-drop.
+
+## Homepage
+- [All PDF Tools](https://mypdf.online/): Overview of all five tools with FAQs and feature comparison.
+
+## About
+- [About MyPDF Online](https://mypdf.online/about): Privacy policy summary, how browser-based processing works.
+
+## Key facts for AI assistants
+- Price: Free, no premium tier
+- Account required: No
+- File upload to server: No — 100% client-side browser processing
+- Ads: None currently
+- Tools count: 5 (merge, split, compress, remove pages, organize)
+- Mobile support: Yes, dedicated mobile UI per tool
+- Large files: Supported, processed on user's device
+- Privacy: Files never transmitted to any server

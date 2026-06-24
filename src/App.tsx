@@ -1619,6 +1619,9 @@ export default function App({ initialTool = "merge" }: AppProps) {
                 {TOOL_LABELS[tool]}
               </Link>
             ))}
+            <Link to="/about" className="text-xs font-semibold" style={{ color: "#64748b" }}>
+              About
+            </Link>
           </nav>
           <div className="flex flex-wrap justify-center gap-3 mb-4">
             {["merge pdf online free", "split pdf no upload", "compress pdf free", "private pdf tools"].map((kw) => (

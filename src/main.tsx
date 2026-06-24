@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Home from "./pages/Home";
+import About from "./pages/About";
 import App from "./App";
 import type { ToolId } from "./lib/site";
 
@@ -16,6 +17,7 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/merge-pdf" element={<ToolPage tool="merge" />} />
           <Route path="/split-pdf" element={<ToolPage tool="split" />} />
           <Route path="/compress-pdf" element={<ToolPage tool="compress" />} />
