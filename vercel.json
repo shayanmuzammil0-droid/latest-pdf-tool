@@ -14,12 +14,7 @@
     { "source": "/reorder-pdf-pages", "destination": "/organize-pdf", "statusCode": 301 },
     { "source": "/rotate-pdf-pages", "destination": "/organize-pdf", "statusCode": 301 }
   ],
-  "rewrites": [
-    {
-      "source": "/((?!assets/|sitemap\\.xml|robots\\.txt|llms\\.txt|manifest\\.json|favicon\\.ico|og-image\\.jpg).*)",
-      "destination": "/index.html"
-    }
-  ],
+  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
   "headers": [
     {
       "source": "/sitemap.xml",
@@ -43,6 +38,18 @@
       ]
     },
     {
+      "source": "/og-image.jpg",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+    },
+    {
+      "source": "/favicon.ico",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
@@ -50,14 +57,6 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
       ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
-    },
-    {
-      "source": "/(.*\\.(jpg|jpeg|png|gif|webp|svg|ico|woff2?))",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
     }
   ]
 }
