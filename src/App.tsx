@@ -1,6 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import SEOHead from "@/components/SEOHead";
+import ToolSEOContent from "@/components/seo/ToolSEOContent";
+import { ToolHero } from "@/components/seo/ToolHero";
+import { ToolPageHeader } from "@/components/seo/ToolPageHeader";
 import { getSeoForTool } from "@/lib/seo-config";
 import { SITE_NAME, TOOL_LABELS, TOOL_ROUTES, type ToolId } from "@/lib/site";
 import { PDFDocument, degrees } from "pdf-lib";
@@ -10,7 +13,6 @@ import SplitPDF from "./pages/SplitPDF";
 import SplitPDFMobile from "./pages/SplitPDFMobile";
 import CompressPDFDesktop from "./pages/CompressPDFDesktop";
 import CompressPDFMobile from "./pages/CompressPDFMobile";
-import CompressPDFLanding from "./pages/CompressPDFLanding";
 import RemovePagesDesktop from "./pages/RemovePagesDesktop";
 import RemovePagesMobile from "./pages/RemovePagesMobile";
 import OrganizePDFDesktop from "./pages/OrganizePDFDesktop";
@@ -263,14 +265,12 @@ interface AppProps {
 }
 
 export default function App({ initialTool = "merge" }: AppProps) {
-  const navigate = useNavigate();
-  const [activeTool, setActiveTool] = useState<ToolId>(initialTool);
+  const activeTool = initialTool;
   const [isSplitUploadScreen, setIsSplitUploadScreen] = useState(true);
   const [isCompressUploadScreen, setIsCompressUploadScreen] = useState(true);
   const [isRemoveUploadScreen, setIsRemoveUploadScreen] = useState(true);
   const [isOrganizeUploadScreen, setIsOrganizeUploadScreen] = useState(true);
   const isMobile = useIsMobile();
-  const [isMobileToolMenuOpen, setIsMobileToolMenuOpen] = useState(false);
   const [files, setFiles] = useState<PDFFile[]>([]);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [merging, setMerging] = useState(false);
@@ -308,18 +308,6 @@ export default function App({ initialTool = "merge" }: AppProps) {
     setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
   };
 
-  const navigateToTool = useCallback(
-    (tool: ToolId) => {
-      setActiveTool(tool);
-      navigate(TOOL_ROUTES[tool]);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    },
-    [navigate]
-  );
-
-  useEffect(() => {
-    setActiveTool(initialTool);
-  }, [initialTool]);
 
   useEffect(() => {
     if (activeTool === "split") setIsSplitUploadScreen(true);
@@ -328,9 +316,6 @@ export default function App({ initialTool = "merge" }: AppProps) {
     if (activeTool === "organize") setIsOrganizeUploadScreen(true);
   }, [activeTool]);
 
-  useEffect(() => {
-    if (!isMobile) setIsMobileToolMenuOpen(false);
-  }, [isMobile]);
 
   const addFiles = useCallback(async (incoming: File[]) => {
     const pdfs = incoming.filter((f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"));
@@ -541,291 +526,14 @@ export default function App({ initialTool = "merge" }: AppProps) {
         ))}
       </div>
 
-      {/* ── Header ── */}
-      <header className="sticky top-0 z-40 header-glass border-b" style={{ borderColor: "rgba(226,232,240,0.8)" }}>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
-            <div className="w-9 h-9 rounded-xl logo-icon flex items-center justify-center shadow-md">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="white" opacity="0.95"/>
-                <polyline points="14 2 14 8 20 8" stroke="white" strokeWidth="1.8" fill="none" opacity="0.7"/>
-                <path d="M9 13h6M9 16h4" stroke="white" strokeWidth="1.4" strokeLinecap="round" opacity="0.8"/>
-              </svg>
-            </div>
-            <div>
-              <span className="font-extrabold text-base tracking-tight" style={{ color: "#0f172a" }}>{SITE_NAME}</span>
-              <span className="hidden sm:inline font-extrabold text-base tracking-tight heading-gradient"> · {activeToolLabel}</span>
-            </div>
-          </Link>
-
-          <div className="flex items-center gap-2">
-            {isMobile ? (
-              <button
-                onClick={() => setIsMobileToolMenuOpen((prev) => !prev)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold"
-                style={{ background: "#f8fafc", borderColor: "#e2e8f0", color: "#334155" }}
-                aria-expanded={isMobileToolMenuOpen}
-                aria-label="Open tool menu"
-              >
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                  <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-                </svg>
-                Tools
-              </button>
-            ) : (
-              <>
-                <div className="tool-nav-tabs flex items-center gap-1 p-1 rounded-xl" style={{ background: "#f1f5f9" }}>
-                  <button
-                    onClick={() => navigateToTool("merge")}
-                    className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "merge" ? "active" : ""}`}
-                  >
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
-                      <path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                    Merge PDF
-                  </button>
-                  <button
-                    onClick={() => navigateToTool("split")}
-                    className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "split" ? "active" : ""}`}
-                  >
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
-                      <circle cx="6" cy="6" r="2.5" stroke="currentColor" strokeWidth="2"/>
-                      <circle cx="6" cy="18" r="2.5" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M19 4L8.5 14.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M13.5 13.5L19 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M8.5 8.5L11.5 11.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                    Split PDF
-                  </button>
-                  <button
-                    onClick={() => navigateToTool("compress")}
-                    className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "compress" ? "active" : ""}`}
-                  >
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
-                      <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M14 3v6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M16 14l-4 4-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M12 10v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                    Compress PDF
-                  </button>
-                  <button
-                    onClick={() => navigateToTool("remove")}
-                    className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "remove" ? "active" : ""}`}
-                  >
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
-                      <path d="M9 3h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M4 7h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M7 7l1 12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M10 11v5M14 11v5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                    Remove Pages
-                  </button>
-                  <button
-                    onClick={() => navigateToTool("organize")}
-                    className={`tool-nav-tab flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all ${activeTool === "organize" ? "active" : ""}`}
-                  >
-                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24">
-                      <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2"/>
-                      <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2"/>
-                      <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2"/>
-                      <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
-                    Organize PDF
-                  </button>
-                </div>
-                <div className="trust-badge hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: "#f0fdf4", color: "#16a34a", border: "1.5px solid #bbf7d0" }}>
-                  <ShieldIcon /> Private
-                </div>
-                <div className="trust-badge hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: "#eff6ff", color: "#2563eb", border: "1.5px solid #bfdbfe" }}>
-                  <ZapIcon /> No Login
-                </div>
-                <div className="trust-badge hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: "#fefce8", color: "#d97706", border: "1.5px solid #fde68a" }}>
-                  <FreeIcon /> Free
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        {isMobile && isMobileToolMenuOpen && (
-          <div className="max-w-5xl mx-auto px-4 pb-3">
-            <div className="rounded-2xl border p-2 shadow-lg" style={{ background: "rgba(255,255,255,0.98)", borderColor: "#e2e8f0" }}>
-              {([
-                ["merge", "Merge PDF"],
-                ["split", "Split PDF"],
-                ["compress", "Compress PDF"],
-                ["remove", "Remove Pages"],
-                ["organize", "Organize PDF"],
-              ] as const).map(([tool, label]) => (
-                <button
-                  key={tool}
-                  onClick={() => {
-                    navigateToTool(tool);
-                    setIsMobileToolMenuOpen(false);
-                  }}
-                  className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-bold"
-                  style={{ background: activeTool === tool ? "#f0fdfa" : "transparent", color: activeTool === tool ? "#0f766e" : "#334155" }}
-                >
-                  <span>{label}</span>
-                  {activeTool === tool && (
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </header>
+      <ToolPageHeader tool={activeTool} />
+      <ToolHero tool={activeTool} />
 
       {activeTool === "split" ? (
       <>
         {isMobile
           ? <SplitPDFMobile onUploadScreenChange={setIsSplitUploadScreen} />
           : <SplitPDF onUploadScreenChange={setIsSplitUploadScreen} />}
-
-        {isSplitUploadScreen && <section className="max-w-5xl mx-auto px-4 sm:px-6 mt-8 pb-6">
-
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-center" style={{ color: "#0f172a" }}>
-              How to <span className="heading-gradient">Split PDF Files Online</span>
-            </h2>
-            <p className="text-center text-sm mb-8" style={{ color: "#64748b" }}>Done in 4 steps — quick and easy</p>
-            <div className="grid sm:grid-cols-4 gap-4">
-              {[
-                { n: "01", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M4 16V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round"/><path d="M12 3v13M7.5 7.5L12 3l4.5 4.5" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "Upload PDF", desc: "Select your PDF file or drag and drop it into the upload box." },
-                { n: "02", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Pick Split Mode", desc: "Choose Extract, Split All, or By Range depending on your need." },
-                { n: "03", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" stroke="#4f46e5" strokeWidth="2"/><path d="M12 7v10M8.5 10.5 12 7l3.5 3.5M8.5 13.5 12 17l3.5-3.5" stroke="#4f46e5" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "Arrange & Select", desc: "Drag thumbnails to reorder and select pages or type custom ranges." },
-                { n: "04", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 3v13M7 11l5 5 5-5" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 18v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Download Files", desc: "Download your split PDFs instantly as files or ZIP, with no login." },
-              ].map((s) => (
-                <div key={s.n} className="step-card p-5 rounded-2xl text-center">
-                  <div className="text-xs font-black mb-3 tracking-widest heading-gradient">{s.n}</div>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ background: "#eef2ff" }}>{s.icon}</div>
-                  <h3 className="font-bold text-sm mb-1.5" style={{ color: "#0f172a" }}>{s.title}</h3>
-                  <p className="text-xs leading-relaxed" style={{ color: "#64748b" }}>{s.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-8 text-center" style={{ color: "#0f172a" }}>
-              Why Our <span className="heading-gradient">PDF Split Tool</span> Is Different
-            </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#4f46e5" strokeWidth="2"/><path d="M8 12h8M12 8v8" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round"/></svg>), title: "100% Free Forever", desc: "Split PDFs without limits, subscriptions, or hidden premium walls.", color: "#eef2ff" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4" stroke="#16a34a" strokeWidth="2"/><path d="M2 21v-2a4 4 0 0 1 4-4h6" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/><path d="M16 21l2 2 4-4" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "No Login Required", desc: "Open the page and split right away. No account, no email, no wait.", color: "#f0fdf4" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round"/><path d="M9 12l2 2 4-4" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "100% Private", desc: "Everything runs in your browser, so your files never leave your device.", color: "#eff6ff" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="#d97706" strokeWidth="2" strokeLinejoin="round"/></svg>), title: "Fast Client-Side Splitting", desc: "Extract pages and ranges instantly with efficient local processing.", color: "#fefce8" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" stroke="#7c3aed" strokeWidth="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Visual Page Thumbnails", desc: "Preview every page before splitting so you always extract exactly what you need.", color: "#f5f3ff" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#0891b2" strokeWidth="2"/><path d="M8 12h8M12 8v8" stroke="#0891b2" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Flexible Split Modes", desc: "Split all pages, extract selected pages, or split by exact custom ranges.", color: "#ecfeff" },
-              ].map((f) => (
-                <div key={f.title} className="feature-card p-5 rounded-2xl border flex gap-4" style={{ background: "#fff", borderColor: "#f1f5f9" }}>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: f.color }}>{f.svg}</div>
-                  <div>
-                    <h3 className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{f.title}</h3>
-                    <p className="text-xs leading-relaxed" style={{ color: "#64748b" }}>{f.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-16 benefits-block p-8 sm:p-10 rounded-3xl">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-center" style={{ color: "#0f172a" }}>
-              Benefits of <span className="heading-gradient">Browser‑Based PDF Splitting</span>
-            </h2>
-            <p className="text-center text-sm mb-8" style={{ color: "#64748b" }}>No software. No server. No friction.</p>
-            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-              {[
-                "Split large PDFs in seconds with smooth in-browser performance",
-                "Extract only the pages you need from any document",
-                "No installation or app download required",
-                "Works on desktop, tablet, and mobile browsers",
-                "Supports page reordering before split operations",
-                "Your files remain private and local on your device",
-              ].map((b) => (
-                <div key={b} className="flex items-start gap-3">
-                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black shrink-0 mt-0.5" style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)", color: "white" }}>✓</span>
-                  <span className="text-sm leading-relaxed" style={{ color: "#334155" }}>{b}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-8 text-center" style={{ color: "#0f172a" }}>
-              Frequently Asked <span className="heading-gradient">Questions</span>
-            </h2>
-            <div className="max-w-3xl mx-auto flex flex-col gap-2.5">
-              {[
-                { q: "Is this PDF split tool completely free?", a: "Yes, it's fully free. You can split PDFs as many times as you want without paying." },
-                { q: "Do I need to sign up to split PDF files?", a: "No signup is required. Just upload your file and split instantly." },
-                { q: "Can I split by page range?", a: "Yes. You can type ranges like 1-3, 6, 9-12 and extract exactly those pages." },
-                { q: "Can I reorder pages before splitting?", a: "Yes. Drag and drop page cards to set your order before extracting or splitting." },
-                { q: "Are my PDF files uploaded to a server?", a: "No. Processing is done locally in your browser for maximum privacy." },
-                { q: "Does it work on mobile devices?", a: "Yes. The split editor is optimized for mobile with touch-friendly page controls." },
-              ].map((item) => (
-                <details key={item.q} className="faq-item border rounded-2xl overflow-hidden" style={{ borderColor: "#e2e8f0", background: "#fff" }}>
-                  <summary className="flex items-center justify-between px-5 py-4 cursor-pointer font-semibold text-sm" style={{ color: "#0f172a" }}>
-                    {item.q}
-                    <svg className="faq-arrow shrink-0 ml-3" width="18" height="18" fill="none" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke="#4f46e5" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </summary>
-                  <p className="px-5 pb-4 text-sm leading-relaxed" style={{ color: "#64748b" }}>{item.a}</p>
-                </details>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <h2 className="text-2xl font-extrabold mb-6 text-center" style={{ color: "#0f172a" }}>
-              More <span className="heading-gradient">PDF Tools</span>
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M8 5h8M8 12h8M8 19h8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/><path d="M5 8l3-3 3 3M19 16l-3 3-3-3" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), name: "PDF Merge", desc: "Combine files quickly" },
-                { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#6366f1" strokeWidth="2"/></svg>), name: "PDF Compress", desc: "Reduce file size", live: true, tool: "compress" as const },
-                { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#6366f1" strokeWidth="2"/><path d="M9 13h6M9 17h4" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>), name: "PDF to Word", desc: "Convert to editable doc" },
-                { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#6366f1" strokeWidth="2"/><circle cx="8.5" cy="8.5" r="1.5" stroke="#6366f1" strokeWidth="1.5"/><path d="M21 15l-5-5L5 21" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), name: "PDF to JPG", desc: "Export as images" },
-              ].map((tool) => (
-                <div key={tool.name} className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={"tool" in tool && tool.tool ? () => navigateToTool(tool.tool) : undefined}>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>{tool.svg}</div>
-                  <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{tool.name}</p>
-                  <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>{tool.desc}</p>
-                  <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "live" in tool && tool.live ? "#f0fdf4" : "#eef2ff", color: "live" in tool && tool.live ? "#16a34a" : "#818cf8", border: "live" in tool && tool.live ? "1px solid #bbf7d0" : undefined }}>{"live" in tool && tool.live ? "Live" : "Coming soon"}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="seo-article-block p-8 sm:p-10 rounded-3xl mb-8">
-            <h2 className="text-xl sm:text-2xl font-extrabold mb-4" style={{ color: "#0f172a" }}>
-              The Best Free PDF Split Tool Online
-            </h2>
-            <div className="space-y-4 text-sm leading-relaxed" style={{ color: "#475569" }}>
-              <p>
-                Need a fast way to <strong style={{ color: "#0f172a" }}>split PDF files online free</strong>? This tool lets you split full documents, extract selected pages, or use custom page ranges in seconds.
-              </p>
-              <p>
-                Unlike many tools, our <strong style={{ color: "#0f172a" }}>PDF splitter without login</strong> works instantly and keeps the experience clean with visual page thumbnails and drag-to-reorder controls.
-              </p>
-              <p>
-                All processing happens locally in your browser, making it a <strong style={{ color: "#0f172a" }}>secure browser-based PDF splitter</strong> that keeps your documents private.
-              </p>
-              <p>
-                <strong style={{ color: "#0f172a" }}>SEO description:</strong> Split PDF files online for free with page preview, range selection, and secure browser-based processing. No login, no upload, instant results.
-              </p>
-              <p className="font-semibold" style={{ color: "#4f46e5" }}>
-                Ready to split your PDF? Scroll up, choose a mode, and download instantly.
-              </p>
-            </div>
-          </div>
-        </section>}
       </>
       ) : activeTool === "compress" ? (
       <>
@@ -833,340 +541,19 @@ export default function App({ initialTool = "merge" }: AppProps) {
           ? <CompressPDFMobile onUploadScreenChange={setIsCompressUploadScreen} />
           : <CompressPDFDesktop onUploadScreenChange={setIsCompressUploadScreen} />}
 
-        {isCompressUploadScreen && <CompressPDFLanding onSelectTool={navigateToTool} />}
+
       </>
       ) : activeTool === "remove" ? (
       <>
         {isMobile
           ? <RemovePagesMobile onUploadScreenChange={setIsRemoveUploadScreen} />
           : <RemovePagesDesktop onUploadScreenChange={setIsRemoveUploadScreen} />}
-
-        {isRemoveUploadScreen && <section className="max-w-5xl mx-auto px-4 sm:px-6 mt-8 pb-6">
-
-          {/* How it works */}
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-center" style={{ color: "#0f172a" }}>
-              How to <span className="heading-gradient">Remove PDF Pages</span> Online
-            </h2>
-            <p className="text-center text-sm mb-8" style={{ color: "#64748b" }}>Done in 3 steps — quick and easy</p>
-            <div className="grid sm:grid-cols-3 gap-4">
-              {[
-                { n: "01", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M4 16V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/><path d="M12 3v13M7.5 7.5L12 3l4.5 4.5" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "Upload Your PDF", desc: "Click 'Select PDF File' or drag and drop your PDF into the upload box." },
-                { n: "02", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#ef4444" strokeWidth="2"/><path d="M9 9l6 6M15 9l-6 6" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Select Pages to Remove", desc: "Click page thumbnails to mark them, or type a range like 1-3, 7, 10-12." },
-                { n: "03", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 3v13M7 11l5 5 5-5" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 18v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Download the Result", desc: "Hit 'Remove Pages' and your cleaned PDF downloads instantly. No login." },
-              ].map((s) => (
-                <div key={s.n} className="step-card p-5 rounded-2xl text-center">
-                  <div className="text-xs font-black mb-3 tracking-widest heading-gradient">{s.n}</div>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ background: "#fff1f2" }}>{s.icon}</div>
-                  <h3 className="font-bold text-sm mb-1.5" style={{ color: "#0f172a" }}>{s.title}</h3>
-                  <p className="text-xs leading-relaxed" style={{ color: "#64748b" }}>{s.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Why Different */}
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-8 text-center" style={{ color: "#0f172a" }}>
-              Why Our <span className="heading-gradient">PDF Pages Remover Tool</span> Is Different
-            </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#ef4444" strokeWidth="2"/><path d="M8 12h8M12 8v8" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/></svg>), title: "100% Free Forever", desc: "Remove PDF pages without limits, subscriptions, or hidden premium walls.", color: "#fff1f2" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4" stroke="#16a34a" strokeWidth="2"/><path d="M2 21v-2a4 4 0 0 1 4-4h6" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/><path d="M16 21l2 2 4-4" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "No Login Required", desc: "Open the page and remove pages right away. No account, no email, no wait.", color: "#f0fdf4" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round"/><path d="M9 12l2 2 4-4" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "100% Private", desc: "Everything runs in your browser — your files never leave your device.", color: "#eff6ff" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="#d97706" strokeWidth="2" strokeLinejoin="round"/></svg>), title: "Instant Processing", desc: "Pages are removed and the PDF is rebuilt instantly with no server wait.", color: "#fefce8" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" stroke="#7c3aed" strokeWidth="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Visual Page Thumbnails", desc: "See every page preview before removing so you never delete the wrong page.", color: "#f5f3ff" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#0891b2" strokeWidth="2"/><path d="M9 8h6M9 12h6M9 16h3" stroke="#0891b2" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Click or Type Range", desc: "Select pages by clicking thumbnails or by typing ranges like 1-5, 7, 9-11.", color: "#ecfeff" },
-              ].map((f) => (
-                <div key={f.title} className="feature-card p-5 rounded-2xl border flex gap-4" style={{ background: "#fff", borderColor: "#f1f5f9" }}>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: f.color }}>{f.svg}</div>
-                  <div>
-                    <h3 className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{f.title}</h3>
-                    <p className="text-xs leading-relaxed" style={{ color: "#64748b" }}>{f.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Benefits */}
-          <div className="mb-16 benefits-block p-8 sm:p-10 rounded-3xl">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-center" style={{ color: "#0f172a" }}>
-              Benefits of <span className="heading-gradient">Browser‑Based PDF Pages Removers</span>
-            </h2>
-            <p className="text-center text-sm mb-8" style={{ color: "#64748b" }}>No software. No server. No friction.</p>
-            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-              {[
-                "Delete unwanted pages from any PDF in seconds",
-                "No software download or installation required",
-                "Files never leave your device — maximum privacy",
-                "Works on Windows, Mac, iOS, Android, and Linux",
-                "Remove one page, many pages, or entire ranges",
-                "No watermarks or quality loss in the output PDF",
-              ].map((b) => (
-                <div key={b} className="flex items-start gap-3">
-                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black shrink-0 mt-0.5" style={{ background: "linear-gradient(135deg,#ef4444,#dc2626)", color: "white" }}>✓</span>
-                  <span className="text-sm leading-relaxed" style={{ color: "#334155" }}>{b}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* FAQ */}
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-8 text-center" style={{ color: "#0f172a" }}>
-              Frequently Asked <span className="heading-gradient">Questions</span>
-            </h2>
-            <div className="max-w-3xl mx-auto flex flex-col gap-2.5">
-              {[
-                { q: "Is this PDF pages remover completely free?", a: "Yes, it's fully free. You can remove pages from PDFs as many times as you want without paying anything." },
-                { q: "Do I need to sign up to remove PDF pages?", a: "No signup is required. Just upload your file and remove pages instantly — no account or email needed." },
-                { q: "Can I remove multiple pages at once?", a: "Yes. Click multiple thumbnails to mark them, or type a range like 1-3, 6, 9-12 to select exactly the pages you want to delete." },
-                { q: "Are my PDF files uploaded to a server?", a: "No. Processing is done entirely within your browser. Your files are never sent to any server, keeping them 100% private." },
-                { q: "Will the output PDF lose quality?", a: "No. Pages are copied directly from the original PDF structure without re-encoding, so text, images, and formatting remain identical." },
-                { q: "Does it work on mobile devices?", a: "Yes. The tool is fully optimized for mobile with touch-friendly page thumbnails and works on iOS and Android browsers." },
-              ].map((item) => (
-                <details key={item.q} className="faq-item border rounded-2xl overflow-hidden" style={{ borderColor: "#e2e8f0", background: "#fff" }}>
-                  <summary className="flex items-center justify-between px-5 py-4 cursor-pointer font-semibold text-sm" style={{ color: "#0f172a" }}>
-                    {item.q}
-                    <svg className="faq-arrow shrink-0 ml-3" width="18" height="18" fill="none" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke="#ef4444" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </summary>
-                  <p className="px-5 pb-4 text-sm leading-relaxed" style={{ color: "#64748b" }}>{item.a}</p>
-                </details>
-              ))}
-            </div>
-          </div>
-
-          {/* More PDF Tools */}
-          <div className="mb-16">
-            <h2 className="text-2xl font-extrabold mb-6 text-center" style={{ color: "#0f172a" }}>
-              More <span className="heading-gradient">PDF Tools</span>
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div
-                className="tool-card p-4 rounded-2xl text-center cursor-pointer"
-                onClick={() => navigateToTool("merge")}
-              >
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
-                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M8 5h8M8 12h8M8 19h8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/><path d="M5 8l3-3 3 3M19 16l-3 3-3-3" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </div>
-                <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>PDF Merge</p>
-                <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Combine files quickly</p>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
-              </div>
-              <div
-                className="tool-card p-4 rounded-2xl text-center cursor-pointer"
-                onClick={() => navigateToTool("split")}
-              >
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
-                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M8 12h8M12 8v8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>
-                </div>
-                <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>PDF Split</p>
-                <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Split into multiple files</p>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
-              </div>
-              {[
-                { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#6366f1" strokeWidth="2"/></svg>), name: "PDF Compress", desc: "Reduce file size", live: true, tool: "compress" as const },
-                { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#6366f1" strokeWidth="2"/><path d="M9 13h6M9 17h4" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>), name: "PDF to Word", desc: "Convert to editable doc" },
-              ].map((tool) => (
-                <div key={tool.name} className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={"tool" in tool && tool.tool ? () => navigateToTool(tool.tool) : undefined}>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>{tool.svg}</div>
-                  <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{tool.name}</p>
-                  <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>{tool.desc}</p>
-                  <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "live" in tool && tool.live ? "#f0fdf4" : "#eef2ff", color: "live" in tool && tool.live ? "#16a34a" : "#818cf8", border: "live" in tool && tool.live ? "1px solid #bbf7d0" : undefined }}>{"live" in tool && tool.live ? "Live" : "Coming soon"}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* SEO Article Block */}
-          <div className="seo-article-block p-8 sm:p-10 rounded-3xl mb-8">
-            <h2 className="text-xl sm:text-2xl font-extrabold mb-4" style={{ color: "#0f172a" }}>
-              The Best Free PDF Pages Remover Tool Online
-            </h2>
-            <div className="space-y-4 text-sm leading-relaxed" style={{ color: "#475569" }}>
-              <p>
-                Need a fast, free way to <strong style={{ color: "#0f172a" }}>remove pages from a PDF online</strong>? This tool lets you delete any page, multiple pages, or a full range of pages from any PDF — instantly and with no login required.
-              </p>
-              <p>
-                Unlike many tools, our <strong style={{ color: "#0f172a" }}>PDF page remover without login</strong> works instantly and keeps the experience clean with live visual page thumbnails, so you always see exactly what you're deleting before you download.
-              </p>
-              <p>
-                All processing happens locally in your browser using JavaScript, making it a <strong style={{ color: "#0f172a" }}>secure browser-based PDF pages remover</strong> that keeps your documents completely private — no file is ever sent to a server.
-              </p>
-              <p>
-                Whether you're trimming blank pages, removing confidential content, or cleaning up a scanned document, this tool handles it in seconds on any device — desktop, tablet, or mobile.
-              </p>
-              <p className="font-semibold" style={{ color: "#ef4444" }}>
-                Ready to remove pages? Scroll up, upload your PDF, and download your clean file instantly.
-              </p>
-            </div>
-          </div>
-        </section>}
       </>
       ) : activeTool === "organize" ? (
       <>
         {isMobile
           ? <OrganizePDFMobile onUploadScreenChange={setIsOrganizeUploadScreen} />
           : <OrganizePDFDesktop onUploadScreenChange={setIsOrganizeUploadScreen} />}
-
-        {isOrganizeUploadScreen && <section className="max-w-5xl mx-auto px-4 sm:px-6 mt-8 pb-6">
-
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-center" style={{ color: "#0f172a" }}>
-              How to <span className="heading-gradient">Organize PDF Pages</span> Online
-            </h2>
-            <p className="text-center text-sm mb-8" style={{ color: "#64748b" }}>Done in 3 steps — quick and easy</p>
-            <div className="grid sm:grid-cols-3 gap-4">
-              {[
-                { n: "01", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M4 16V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1" stroke="#0d9488" strokeWidth="2" strokeLinecap="round"/><path d="M12 3v13M7.5 7.5L12 3l4.5 4.5" stroke="#0d9488" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "Upload Your PDF", desc: "Select your PDF or drag it into the upload box to load all pages instantly." },
-                { n: "02", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#0d9488" strokeWidth="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#0d9488" strokeWidth="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#0d9488" strokeWidth="2"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="#0d9488" strokeWidth="2"/></svg>), title: "Drag Pages Into Order", desc: "Move thumbnails around until the page sequence matches exactly what you want in the final PDF." },
-                { n: "03", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 3v13M7 11l5 5 5-5" stroke="#0d9488" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 18v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" stroke="#0d9488" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Download Organized PDF", desc: "Click save and your reordered PDF downloads instantly with the new page sequence preserved." },
-              ].map((s) => (
-                <div key={s.n} className="step-card p-5 rounded-2xl text-center">
-                  <div className="text-xs font-black mb-3 tracking-widest heading-gradient">{s.n}</div>
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ background: "#f0fdfa" }}>{s.icon}</div>
-                  <h3 className="font-bold text-sm mb-1.5" style={{ color: "#0f172a" }}>{s.title}</h3>
-                  <p className="text-xs leading-relaxed" style={{ color: "#64748b" }}>{s.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-8 text-center" style={{ color: "#0f172a" }}>
-              Why This <span className="heading-gradient">PDF Organizer</span> Is Different
-            </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#0d9488" strokeWidth="2" strokeLinejoin="round"/><path d="M9 12l2 2 4-4" stroke="#0d9488" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "100% Private", desc: "All processing runs locally in your browser. Your PDF never gets uploaded to a server.", color: "#f0fdfa" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M4 12h16M12 4l8 8-8 8" stroke="#14b8a6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "Visual Reordering", desc: "See real page thumbnails before you move them so the output order is always clear.", color: "#ecfeff" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M8 8h8M8 12h8M8 16h8" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/><path d="M5 8h.01M5 12h.01M5 16h.01" stroke="#16a34a" strokeWidth="2.4" strokeLinecap="round"/></svg>), title: "Exact Order Control", desc: "Drag pages into any sequence you need for reports, contracts, handouts, or presentations.", color: "#f0fdf4" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="#d97706" strokeWidth="2" strokeLinejoin="round"/></svg>), title: "Fast In-Browser Processing", desc: "No waiting for uploads or server queues. Reorder and save immediately.", color: "#fefce8" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" stroke="#7c3aed" strokeWidth="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Live Page Previews", desc: "Each page is rendered as a preview card so you can organize visually instead of guessing from page numbers.", color: "#f5f3ff" },
-                { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#2563eb" strokeWidth="2"/><path d="M12 8v8M8 12h8" stroke="#2563eb" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Free and No Login", desc: "Open the page, upload the file, organize it, and download. No account, no email, no subscription.", color: "#eff6ff" },
-              ].map((f) => (
-                <div key={f.title} className="feature-card p-5 rounded-2xl border flex gap-4" style={{ background: "#fff", borderColor: "#f1f5f9" }}>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: f.color }}>{f.svg}</div>
-                  <div>
-                    <h3 className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{f.title}</h3>
-                    <p className="text-xs leading-relaxed" style={{ color: "#64748b" }}>{f.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-16 benefits-block p-8 sm:p-10 rounded-3xl">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-center" style={{ color: "#0f172a" }}>
-              Benefits of <span className="heading-gradient">Organizing PDF Pages</span>
-            </h2>
-            <p className="text-center text-sm mb-8" style={{ color: "#64748b" }}>Simple page management without desktop software</p>
-            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-              {[
-                "Put reports and proposals into the correct reading order",
-                "Rearrange scanned documents after importing or combining files",
-                "Prepare presentation decks and printable packets faster",
-                "Work entirely in the browser with no installation required",
-                "Keep sensitive documents local for maximum privacy",
-                "Save a clean reordered PDF with no watermark added",
-              ].map((b) => (
-                <div key={b} className="flex items-start gap-3">
-                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black shrink-0 mt-0.5" style={{ background: "linear-gradient(135deg,#14b8a6,#0d9488)", color: "white" }}>✓</span>
-                  <span className="text-sm leading-relaxed" style={{ color: "#334155" }}>{b}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold mb-8 text-center" style={{ color: "#0f172a" }}>
-              Frequently Asked <span className="heading-gradient">Questions</span>
-            </h2>
-            <div className="max-w-3xl mx-auto flex flex-col gap-2.5">
-              {[
-                { q: "Can I reorder pages in any sequence I want?", a: "Yes. Drag the page thumbnails into any order you want. The downloaded PDF will follow that same exact sequence." },
-                { q: "Is this Organize PDF tool free?", a: "Yes. It is free to use with no login requirement, no subscription, and no watermark on the output file." },
-                { q: "Are my files uploaded to a server?", a: "No. The tool works directly in your browser and keeps the PDF on your device during processing." },
-                { q: "Does it work on mobile devices?", a: "Yes. On mobile you can use a touch-friendly drag-and-drop layout to reorder pages and save the organized PDF." },
-                { q: "Will page quality change after saving?", a: "No. The pages are copied directly from the original PDF structure and reordered without recompressing the content." },
-                { q: "Can I go back to the original order?", a: "Yes. Both desktop and mobile include a Reset Order action that restores the original sequence from the uploaded PDF." },
-              ].map((item) => (
-                <details key={item.q} className="faq-item border rounded-2xl overflow-hidden" style={{ borderColor: "#e2e8f0", background: "#fff" }}>
-                  <summary className="flex items-center justify-between px-5 py-4 cursor-pointer font-semibold text-sm" style={{ color: "#0f172a" }}>
-                    {item.q}
-                    <svg className="faq-arrow shrink-0 ml-3" width="18" height="18" fill="none" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke="#0d9488" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </summary>
-                  <p className="px-5 pb-4 text-sm leading-relaxed" style={{ color: "#64748b" }}>{item.a}</p>
-                </details>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <h2 className="text-2xl font-extrabold mb-6 text-center" style={{ color: "#0f172a" }}>
-              More <span className="heading-gradient">PDF Tools</span>
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => navigateToTool("merge")}>
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
-                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M8 5h8M8 12h8M8 19h8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/><path d="M5 8l3-3 3 3M19 16l-3 3-3-3" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </div>
-                <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>PDF Merge</p>
-                <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Combine files quickly</p>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
-              </div>
-              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => navigateToTool("split")}>
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
-                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M8 12h8M12 8v8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>
-                </div>
-                <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>PDF Split</p>
-                <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Split into multiple files</p>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
-              </div>
-              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => navigateToTool("remove")}>
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#fff1f2" }}>
-                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M9 3h6" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/><path d="M4 7h16" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/><path d="M7 7l1 12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-12" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </div>
-                <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>Remove Pages</p>
-                <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Delete unwanted pages</p>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
-              </div>
-              <div className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={() => navigateToTool("compress")}>
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
-                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#6366f1" strokeWidth="2"/></svg>
-                </div>
-                <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>PDF Compress</p>
-                <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Reduce file size</p>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="seo-article-block p-8 sm:p-10 rounded-3xl mb-8">
-            <h2 className="text-xl sm:text-2xl font-extrabold mb-4" style={{ color: "#0f172a" }}>
-              The Best Free Organize PDF Tool Online
-            </h2>
-            <div className="space-y-4 text-sm leading-relaxed" style={{ color: "#475569" }}>
-              <p>
-                Need a simple way to <strong style={{ color: "#0f172a" }}>rearrange pages in a PDF online</strong>? This tool lets you upload any PDF, drag pages into the correct order, and download the organized result in seconds.
-              </p>
-              <p>
-                Unlike many PDF tools that rely on server uploads, our <strong style={{ color: "#0f172a" }}>browser-based PDF organizer</strong> keeps every file on your device. That makes it fast, private, and practical for contracts, internal reports, and sensitive documents.
-              </p>
-              <p>
-                Live page previews make reordering much easier than working from page numbers alone. You see each page visually, drag it where it belongs, and save the output when everything looks right.
-              </p>
-              <p>
-                Whether you need to fix the sequence of scanned pages, prepare a report before sharing it, or reorder a combined document after merging files, this <strong style={{ color: "#0f172a" }}>free Organize PDF tool</strong> gives you a fast, clean workflow on desktop and mobile.
-              </p>
-              <p className="font-semibold" style={{ color: "#0d9488" }}>
-                Ready to organize your PDF? Scroll up, upload your file, drag pages into place, and download the final version instantly.
-              </p>
-            </div>
-          </div>
-        </section>}
       </>
       ) : (
       <>
@@ -1174,20 +561,7 @@ export default function App({ initialTool = "merge" }: AppProps) {
       {/* ── HERO UPLOAD ZONE — first thing user sees ── */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-4">
 
-        {/* Hero subtitle — above upload */}
-        {files.length === 0 && (
-          <div className="text-center mt-2 mb-6">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-tight mb-2" style={{ color: "#0f172a" }}>
-              Merge PDF Files Online —{" "}
-              <span className="heading-gradient">Free &amp; No Login Required</span>
-            </h1>
-            <p className="text-sm sm:text-base max-w-xl mx-auto" style={{ color: "#64748b" }}>
-              Combine multiple PDFs into one in seconds. 100% browser‑based, zero uploads, completely private.
-            </p>
-          </div>
-        )}
 
-        {/* Upload Zone */}
         <div
           className={`upload-zone-premium rounded-3xl cursor-pointer select-none transition-all duration-300 ${isDraggingOver ? "upload-zone-active" : ""}`}
           onDrop={onDrop}
@@ -1442,165 +816,10 @@ export default function App({ initialTool = "merge" }: AppProps) {
         </div>
       )}
 
-      {/* ── SEO CONTENT SECTIONS ── */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 mt-20 pb-6">
-
-        {/* How it works */}
-        <div className="mb-16">
-          <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-center" style={{ color: "#0f172a" }}>
-            How to <span className="heading-gradient">Merge PDF Files</span> Online
-          </h2>
-          <p className="text-center text-sm mb-8" style={{ color: "#64748b" }}>Done in 4 steps — takes under 10 seconds</p>
-          <div className="grid sm:grid-cols-4 gap-4">
-            {[
-              { n: "01", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M4 16V17a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round"/><path d="M12 3v13M7.5 7.5L12 3l4.5 4.5" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "Upload PDFs", desc: "Click 'Select PDF Files' or drag & drop your PDF documents directly." },
-              { n: "02", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "Set the Order", desc: "Drag file cards to arrange them in the exact order you want." },
-              { n: "03", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#4f46e5" strokeWidth="2"/><path d="M8 12h8M12 8l4 4-4 4" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "Click Merge", desc: "Hit the Merge button. Processing happens instantly in your browser." },
-              { n: "04", icon: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 3v13M7 11l5 5 5-5" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 18v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round"/></svg>), title: "Download", desc: "Your merged PDF downloads instantly. No email or account needed." },
-            ].map((s) => (
-              <div key={s.n} className="step-card p-5 rounded-2xl text-center">
-                <div className="text-xs font-black mb-3 tracking-widest heading-gradient">{s.n}</div>
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ background: "#eef2ff" }}>{s.icon}</div>
-                <h3 className="font-bold text-sm mb-1.5" style={{ color: "#0f172a" }}>{s.title}</h3>
-                <p className="text-xs leading-relaxed" style={{ color: "#64748b" }}>{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Features */}
-        <div className="mb-16">
-          <h2 className="text-2xl sm:text-3xl font-extrabold mb-8 text-center" style={{ color: "#0f172a" }}>
-            Why Our <span className="heading-gradient">PDF Merge Tool</span> Is Different
-          </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#4f46e5" strokeWidth="2"/><path d="M8 12h8M12 8v8" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round"/></svg>), title: "100% Free Forever", desc: "No hidden costs, no premium plans, no credit card. Full access at zero cost.", color: "#eef2ff" },
-              { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4" stroke="#16a34a" strokeWidth="2"/><path d="M2 21v-2a4 4 0 0 1 4-4h6" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/><path d="M16 21l2 2 4-4" stroke="#16a34a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "No Login Required", desc: "Start merging instantly — no signup, no email, no account needed.", color: "#f0fdf4" },
-              { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round"/><path d="M9 12l2 2 4-4" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), title: "100% Private", desc: "Files stay on your device. Nothing is ever uploaded to any server.", color: "#eff6ff" },
-              { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="#d97706" strokeWidth="2" strokeLinejoin="round"/></svg>), title: "Blazing Fast", desc: "Powered by pdf-lib for instant client-side merging with zero server latency.", color: "#fefce8" },
-              { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" stroke="#7c3aed" strokeWidth="2"/><path d="M9 10h6M9 14h4" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round"/></svg>), title: "PDF Thumbnails", desc: "See actual first-page previews of every uploaded PDF before merging.", color: "#f5f3ff" },
-              { svg: (<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" stroke="#0891b2" strokeWidth="2"/><path d="M9 7h6M9 11h6M9 15h4" stroke="#0891b2" strokeWidth="2" strokeLinecap="round"/><path d="M17 17l2.5 2.5" stroke="#0891b2" strokeWidth="2" strokeLinecap="round"/></svg>), title: "50+ Files at Once", desc: "Merge large batches of PDFs without any performance degradation.", color: "#ecfeff" },
-            ].map((f) => (
-              <div key={f.title} className="feature-card p-5 rounded-2xl border flex gap-4" style={{ background: "#fff", borderColor: "#f1f5f9" }}>
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: f.color }}>{f.svg}</div>
-                <div>
-                  <h3 className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{f.title}</h3>
-                  <p className="text-xs leading-relaxed" style={{ color: "#64748b" }}>{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Benefits gradient block */}
-        <div className="mb-16 benefits-block p-8 sm:p-10 rounded-3xl">
-          <h2 className="text-2xl sm:text-3xl font-extrabold mb-2 text-center" style={{ color: "#0f172a" }}>
-            Benefits of <span className="heading-gradient">Browser‑Based PDF Merging</span>
-          </h2>
-          <p className="text-center text-sm mb-8" style={{ color: "#64748b" }}>No software. No server. No stress.</p>
-          <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-            {[
-              "Merge PDFs in under 10 seconds — start to finish",
-              "No software download or installation required",
-              "Files never leave your device — maximum privacy",
-              "Works on Windows, Mac, iOS, Android, and Linux",
-              "No ads, no pop-ups, no distractions whatsoever",
-              "Works offline once the page has loaded",
-            ].map((b) => (
-              <div key={b} className="flex items-start gap-3">
-                <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black shrink-0 mt-0.5" style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)", color: "white" }}>✓</span>
-                <span className="text-sm leading-relaxed" style={{ color: "#334155" }}>{b}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* FAQ */}
-        <div className="mb-16">
-          <h2 className="text-2xl sm:text-3xl font-extrabold mb-8 text-center" style={{ color: "#0f172a" }}>
-            Frequently Asked <span className="heading-gradient">Questions</span>
-          </h2>
-          <div className="max-w-3xl mx-auto flex flex-col gap-2.5">
-            {[
-              { q: "Is this PDF merge tool completely free?", a: "Yes — 100% free with no hidden fees, premium tiers, or usage limits. Merge as many PDFs as you need, as often as you like." },
-              { q: "Do I need to sign up or log in?", a: "No. There's no registration, no login, and no email required. Open the page and start merging instantly." },
-              { q: "Are my PDFs safe and private?", a: "Absolutely. All processing happens inside your browser using JavaScript. Your files are never sent to any server." },
-              { q: "How many PDF files can I merge?", a: "You can merge 50+ PDFs in a single operation. The tool is optimized for large batches with no performance issues." },
-              { q: "Does it work on mobile?", a: "Yes, the tool is fully responsive and works on iOS, Android, and all modern mobile browsers." },
-              { q: "What if a PDF is password-protected?", a: "Encrypted PDFs may fail to merge. Remove password protection first. The tool will show an error if a file can't be processed." },
-            ].map((item) => (
-              <details key={item.q} className="faq-item border rounded-2xl overflow-hidden" style={{ borderColor: "#e2e8f0", background: "#fff" }}>
-                <summary className="flex items-center justify-between px-5 py-4 cursor-pointer font-semibold text-sm" style={{ color: "#0f172a" }}>
-                  {item.q}
-                  <svg className="faq-arrow shrink-0 ml-3" width="18" height="18" fill="none" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" stroke="#4f46e5" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </summary>
-                <p className="px-5 pb-4 text-sm leading-relaxed" style={{ color: "#64748b" }}>{item.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-
-        {/* Related Tools */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-extrabold mb-6 text-center" style={{ color: "#0f172a" }}>
-            More <span className="heading-gradient">PDF Tools</span>
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {/* PDF Split — live */}
-            <div
-              key="PDF Split"
-              className="tool-card p-4 rounded-2xl text-center cursor-pointer"
-              onClick={() => navigateToTool("split")}
-            >
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>
-                <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M8 12h8M12 8v8" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>
-              </div>
-              <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>PDF Split</p>
-              <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Split into multiple files</p>
-              <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}>Live</span>
-            </div>
-            {/* Related tools */}
-            {[
-              { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="#6366f1" strokeWidth="2"/></svg>), name: "PDF Compress", desc: "Reduce file size", live: true, tool: "compress" as const },
-              { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#6366f1" strokeWidth="2"/><path d="M9 13h6M9 17h4" stroke="#6366f1" strokeWidth="2" strokeLinecap="round"/></svg>), name: "PDF to Word", desc: "Convert to editable doc" },
-              { svg: (<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#6366f1" strokeWidth="2"/><circle cx="8.5" cy="8.5" r="1.5" stroke="#6366f1" strokeWidth="1.5"/><path d="M21 15l-5-5L5 21" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>), name: "PDF to JPG", desc: "Export as images" },
-            ].map((tool) => (
-              <div key={tool.name} className="tool-card p-4 rounded-2xl text-center cursor-pointer" onClick={"tool" in tool && tool.tool ? () => navigateToTool(tool.tool) : undefined}>
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: "#eef2ff" }}>{tool.svg}</div>
-                <p className="font-bold text-sm mb-1" style={{ color: "#0f172a" }}>{tool.name}</p>
-                <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>{tool.desc}</p>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "live" in tool && tool.live ? "#f0fdf4" : "#eef2ff", color: "live" in tool && tool.live ? "#16a34a" : "#818cf8", border: "live" in tool && tool.live ? "1px solid #bbf7d0" : undefined }}>{"live" in tool && tool.live ? "Live" : "Coming soon"}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── SEO ARTICLE BLOCK (user-provided text) ── */}
-        <div className="seo-article-block p-8 sm:p-10 rounded-3xl mb-8">
-          <h2 className="text-xl sm:text-2xl font-extrabold mb-4" style={{ color: "#0f172a" }}>
-            The Best Free PDF Merge Tool Online
-          </h2>
-          <div className="space-y-4 text-sm leading-relaxed" style={{ color: "#475569" }}>
-            <p>
-              Looking for the fastest way to <strong style={{ color: "#0f172a" }}>merge PDF files online free</strong>? You've found it. Our PDF merge tool combines multiple PDF documents into one seamless file — instantly, securely, and without any login required.
-            </p>
-            <p>
-              Unlike other online PDF combiners that require account registration or charge fees, our <strong style={{ color: "#0f172a" }}>PDF merger online without ads</strong> delivers a clean, distraction-free experience with visual file previews so you always merge the right documents.
-            </p>
-            <p>
-              Our tool uses cutting-edge browser technology to process all files locally on your device. This means your sensitive documents are never transmitted to any external server, making it the <strong style={{ color: "#0f172a" }}>most secure online PDF combiner</strong> available.
-            </p>
-            <p className="font-semibold" style={{ color: "#4f46e5" }}>
-              Ready to merge PDFs instantly? Scroll up and start merging — no registration, no payment, no hassle.
-            </p>
-          </div>
-        </div>
-      </section>
-
       </>
       )}
 
+      <ToolSEOContent tool={activeTool} />
       {/* ── Footer ── */}
       {!(activeTool === "split" && !isSplitUploadScreen) && !(activeTool === "compress" && !isCompressUploadScreen) && !(activeTool === "remove" && !isRemoveUploadScreen) && !(activeTool === "organize" && !isOrganizeUploadScreen) && <footer className="border-t py-8 mt-4" style={{ borderColor: "#e2e8f0", background: "#fff" }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
